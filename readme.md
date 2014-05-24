@@ -13,29 +13,21 @@ All lowercase! NPM is case sensitive.
 **Load config**
 ```
 var cf = require('node_cloudflare');
-cf.load(function (error, fs_error)
-{
-	if (fs_error)
-	{
-		throw new Error(fs_error);
-	}
-    server.listen(8880);
-	console.log('Server running.');
-});
-
+server.listen(8880);
+console.log('Server running.');
 ```
 **Check:**
 
 ```
 var ip_address = (req.connection.remoteAddress ? req.connection.remoteAddress : req.remoteAddress);
-	if (cf.check(req)) //CF
-	{
-		res.end('CF IP: ' + ip_address + '\nYour IP: ' + cf.get(req));
-	}
-	else //not CF
-	{	
-		res.end(ip_address);
-	}
+if (cf.check(req)) //CF
+{
+	res.end('CF IP: ' + ip_address + '\nYour IP: ' + cf.get(req));
+}
+else //not CF
+{	
+	res.end(ip_address);
+}
 ```
 
 Check out `example.js` for a another working exmaple that overrides the `req.connection.remoteAddress` getter. 
