@@ -5,24 +5,7 @@
         return Object.keys(obj).length === 0;
     }
 
-    var ranges = {};
-
-    function load(callback) //Load the config
-    {
-        var fs = require('fs');
-        fs.readFile(__dirname + '/ranges.json', 'utf8', function (err, data)
-        {
-            if (err)
-            {
-                callback(true, err);
-            }
-            else
-            {
-                ranges = JSON.parse(data);
-                callback(false, null);
-            }
-        });
-    }
+    var ranges = require('./ranges.json');
 
     function check(req)
     {
