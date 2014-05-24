@@ -1,24 +1,33 @@
 //CloudFlare IP Ranges from https://www.cloudflare.com/ips
-var v4 = ['204.93.240.0/24', '204.93.177.0/24', '199.27.128.0/21', '173.245.48.0/20', '103.22.200.0/22', '141.101.64.0/18', '108.162.192.0/18', '190.93.240.0/20'];
-var v6 = ['2400:cb00::/32', '2606:4700::/32', '2803:f800::/32'];
 
-var fs = require('fs');
+var https = require('https'),
+    fs    = require('fs'),
+    path  = require('path');
 
-var ranges = {};
+function getIPRange(kind, cb) {
+  var ipURL = 'https://www.cloudflare.com/ips-v' + kind;
+  https.get(ipURL, function(res) {
+    var data = '';
+    res.on('data', function(d) {
+      data = data + d.toString();
+    });
+    res.on('end', function() {
+      cb(null, data.split("\n").map(function(str) {
+        return str.trim();
+      })); 
+    });
+    res.on('error', function(err) {
+      throw(Error('Unable to get ' + ipURL + ' because: ' + err.message || err));
+    });
+  });
+}
 
-ranges.v4 = v4;
-ranges.v6 = v6;
-
-var file_contents = JSON.stringify(ranges);
-
-fs.writeFile(__dirname + '/ranges.json', file_contents, 'utf8', function (err)
-{
-    if (err)
-    {
-        console.log(err);
-    }
-    else
-    {
-        console.log('Wrote config file');
-    }
+getIPRange(4, function(err, v4) {
+    if(err) throw err;
+    getIPRange(6, function(err, v6) {
+      if(err) throw err;
+      var contents = JSON.stringify({ v4: v4, v6: v6 });
+      fs.writeFileSync(path.resolve('ranges.json'), contents, 'utf8');
+      console.log('Wrote config file');
+    });
 });
