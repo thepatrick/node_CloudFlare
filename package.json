@@ -27,5 +27,5 @@
     "type": "git",
     "url": "https://github.com/keverw/node_CloudFlare"
   },
-  "main": "node_CloudFlare.js"
+  "main": "lib/cloudlfare.js"
 }
